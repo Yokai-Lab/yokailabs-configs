@@ -1,5 +1,11 @@
 # @yokailabs/prettier-config
 
+## 0.0.3
+
+### Patch Changes
+
+- Retarget repository, bugs, and homepage URLs to the Yokai-Lab org and tidy the changelog/README.
+
 ## 0.0.2
 
 ### Patch Changes

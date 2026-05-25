@@ -1,0 +1,14 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# id-token:write must be on the caller for OIDC; contents:write pushes tags.
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    uses: Yokai-Lab/github-workflows/.github/workflows/npm-publish.yml@v1
