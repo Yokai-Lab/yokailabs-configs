@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@yokailabs/prettier-config.svg?style=flat-square)](https://www.npmjs.com/package/@yokailabs/prettier-config)
 [![npm downloads](https://img.shields.io/npm/dm/@yokailabs/prettier-config.svg?style=flat-square)](https://www.npmjs.com/package/@yokailabs/prettier-config)
-[![license](https://img.shields.io/github/license/McNouvion/yokailabs-configs.svg?style=flat-square)](./LICENSE)
+[![license](https://img.shields.io/github/license/Yokai-Lab/yokailabs-configs.svg?style=flat-square)](./LICENSE)
 
 A collection of shared configuration packages for Yokai Labs projects.
 The goal is **consistency across applications**, not strict enforcement of any particular style.

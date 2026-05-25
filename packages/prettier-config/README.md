@@ -16,7 +16,6 @@ We are not “married” to these specific rules — they simply provide a commo
 ## Features
 
 - Consistent code style across Yokai Labs projects
-- Inline ignore patterns for common build artifacts (`dist/`, `build/`, `coverage/`, `node_modules/`)
 - Opinionated but flexible: change rules here once, and they apply everywhere
 
 ## Installation
@@ -55,4 +54,4 @@ npm i -D file:~/your-workplace-path/yokailabs-configs/packages/prettier-config
 
 ## Releasing
 
-See [CHANGELOG.md](./CHANGELOG.md) for release instructions and version history.
+Releases are managed from the monorepo root with [Changesets](https://github.com/changesets/changesets): run `npm run changeset` to record a change, then `npm run release` to version and publish. See [CHANGELOG.md](./CHANGELOG.md) for version history.
