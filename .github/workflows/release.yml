@@ -12,3 +12,5 @@ permissions:
 jobs:
   release:
     uses: Yokai-Lab/github-workflows/.github/workflows/npm-publish.yml@v1
+    with:
+      git-user-email: patrick+ci@yokailabs.com
