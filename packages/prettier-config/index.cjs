@@ -8,10 +8,4 @@ module.exports = {
   printWidth: 120,
   arrowParens: 'always',
   endOfLine: 'lf',
-  overrides: [
-    {
-      files: '*',
-      excludedFiles: ['dist/**', 'build/**', 'coverage/**', 'node_modules/**'],
-    },
-  ],
 };

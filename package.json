@@ -7,13 +7,12 @@
   "workspaces": [
     "packages/*"
   ],
+  "prettier": "@yokailabs/prettier-config",
   "devDependencies": {
-    "typescript": "^5.5.0",
-    "@changesets/cli": "^2.27.1",
-    "prettier": "^3.3.0"
+    "@changesets/cli": "^2.31.0",
+    "prettier": "^3.8.0"
   },
   "scripts": {
-    "build": "tsc -b packages/*",
     "changeset": "changeset",
     "fmt:check": "prettier . --check",
     "fmt": "prettier . --write",
@@ -25,12 +24,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yokailabs/yokailabs-configs.git"
+    "url": "git+https://github.com/Yokai-Lab/yokailabs-configs.git"
   },
   "bugs": {
-    "url": "https://github.com/yokailabs/yokailabs-configs/issues"
+    "url": "https://github.com/Yokai-Lab/yokailabs-configs/issues"
   },
-  "homepage": "https://github.com/yokailabs/yokailabs-configs#readme",
+  "homepage": "https://github.com/Yokai-Lab/yokailabs-configs#readme",
   "engines": {
     "node": ">=18"
   },
