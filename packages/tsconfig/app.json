@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "@yokailabs/tsconfig — app (Vite + React, browser)",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client", "vitest/globals"],
+    "jsx": "react-jsx",
+    "useDefineForClassFields": true
+  }
+}

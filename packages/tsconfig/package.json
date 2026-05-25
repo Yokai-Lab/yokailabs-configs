@@ -1,0 +1,29 @@
+{
+  "name": "@yokailabs/tsconfig",
+  "version": "0.1.0",
+  "description": "Shared TypeScript configs for Yokai Labs projects (Vite + React SPAs).",
+  "keywords": ["tsconfig", "typescript", "config", "yokailabs", "vite", "react"],
+  "author": "YokaiLabs, LLP.",
+  "license": "MIT",
+  "exports": {
+    "./base": "./base.json",
+    "./app": "./app.json",
+    "./node": "./node.json"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": ["base.json", "app.json", "node.json", "README.md", "CHANGELOG.md"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yokai-Lab/yokailabs-configs.git",
+    "directory": "packages/tsconfig"
+  },
+  "bugs": {
+    "url": "https://github.com/Yokai-Lab/yokailabs-configs/issues"
+  },
+  "homepage": "https://github.com/Yokai-Lab/yokailabs-configs#readme"
+}
