@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.2
+
+### Patch Changes
+
+- 7b853d7: Remove the no-op `overrides` block from the Prettier config. The `excludedFiles` entry had no rule changes, so it never affected formatting — no behavior change for consumers.
+
 All notable changes to `@yokailabs/prettier-config` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
