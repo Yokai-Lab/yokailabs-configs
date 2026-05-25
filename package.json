@@ -16,8 +16,6 @@
     "changeset": "changeset",
     "fmt:check": "prettier . --check",
     "fmt": "prettier . --write",
-    "publish:prettier:dry": "npm publish -w @yokailabs/prettier-config --access public --dry-run",
-    "publish:prettier": "npm publish -w @yokailabs/prettier-config --access public",
     "release": "changeset version && changeset publish",
     "ws:list": "npm query .workspace",
     "ws:versions": "npm ls -ws --depth=0"
