@@ -1,20 +1,26 @@
 {
   "name": "@yokailabs/eslint-config",
-  "version": "0.1.0",
-  "description": "Shared ESLint flat config for Yokai Labs projects (Vite + React + TypeScript).",
+  "version": "0.2.0",
+  "description": "Shared ESLint flat configs for Yokai Labs TypeScript projects: base, Node, and Vite + React.",
   "keywords": [
     "eslint",
     "eslintconfig",
     "flat-config",
     "config",
     "yokailabs",
+    "node",
     "react",
     "typescript"
   ],
   "author": "YokaiLabs, LLP.",
   "license": "MIT",
   "type": "module",
-  "exports": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./base": "./base.js",
+    "./node": "./node.js",
+    "./react": "./react.js"
+  },
   "engines": {
     "node": ">=18"
   },
@@ -23,6 +29,9 @@
   },
   "files": [
     "index.js",
+    "base.js",
+    "node.js",
+    "react.js",
     "README.md",
     "CHANGELOG.md"
   ],
@@ -41,20 +50,20 @@
   },
   "homepage": "https://github.com/Yokai-Lab/yokailabs-configs#readme",
   "devDependencies": {
-    "eslint": "9.39.4",
-    "prettier": "3.8.3",
+    "eslint": "9.39.5",
+    "prettier": "3.9.8",
     "typescript": "6.0.3"
   },
   "dependencies": {
-    "@eslint/js": "9.39.4",
+    "@eslint/js": "9.39.5",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-jsx-a11y": "6.10.2",
-    "eslint-plugin-prettier": "5.5.5",
+    "eslint-plugin-prettier": "5.5.6",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
-    "eslint-plugin-react-refresh": "0.5.2",
-    "eslint-plugin-simple-import-sort": "13.0.0",
-    "globals": "14.0.0",
-    "typescript-eslint": "8.59.3"
+    "eslint-plugin-react-refresh": "0.5.7",
+    "eslint-plugin-simple-import-sort": "14.0.0",
+    "globals": "17.12.0",
+    "typescript-eslint": "8.70.1"
   }
 }

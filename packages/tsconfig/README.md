@@ -11,11 +11,11 @@ Compiler strictness should not deviate between our projects. This package is the
 
 ## Configs
 
-| Entry                    | For                                  | Adds over base                              |
-| ------------------------ | ------------------------------------ | ------------------------------------------- |
-| `@yokailabs/tsconfig/base` | any TS                             | strict + bundler-mode + `noUnused*` etc.    |
-| `@yokailabs/tsconfig/app`  | browser app (Vite + React)         | `DOM` libs, `react-jsx`, `vite/client` types |
-| `@yokailabs/tsconfig/node` | Node-side (vite.config, scripts)   | `ES2023` lib, `node` types                  |
+| Entry                      | For                              | Adds over base                               |
+| -------------------------- | -------------------------------- | -------------------------------------------- |
+| `@yokailabs/tsconfig/base` | any TS                           | strict + bundler-mode + `noUnused*` etc.     |
+| `@yokailabs/tsconfig/app`  | browser app (Vite + React)       | `DOM` libs, `react-jsx`, `vite/client` types |
+| `@yokailabs/tsconfig/node` | Node-side (vite.config, scripts) | `ES2023` lib, `node` types                   |
 
 ## Installation
 
@@ -32,7 +32,7 @@ that only references the per-environment configs:
 // tsconfig.json
 {
   "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
 }
 ```
 
@@ -42,9 +42,9 @@ that only references the per-environment configs:
   "extends": "@yokailabs/tsconfig/app",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "paths": { "@/*": ["./src/*"] }
+    "paths": { "@/*": ["./src/*"] },
   },
-  "include": ["src"]
+  "include": ["src"],
 }
 ```
 
@@ -53,7 +53,7 @@ that only references the per-environment configs:
 {
   "extends": "@yokailabs/tsconfig/node",
   "compilerOptions": { "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo" },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts"],
 }
 ```
 

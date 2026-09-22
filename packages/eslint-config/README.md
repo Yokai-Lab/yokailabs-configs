@@ -3,14 +3,18 @@
 [![npm version](https://img.shields.io/npm/v/@yokailabs/eslint-config.svg?style=flat-square)](https://www.npmjs.com/package/@yokailabs/eslint-config)
 [![license](https://img.shields.io/npm/l/@yokailabs/eslint-config.svg?style=flat-square)](../../LICENSE)
 
-Shared [ESLint](https://eslint.org/) flat config for Yokai Labs projects (Vite + React + TypeScript), extracted from a battle-tested setup.
+Shared [ESLint](https://eslint.org/) flat configs for Yokai Labs TypeScript projects, in three presets: `base`, `node` and `react` (Vite + React).
 
 ## What's included
 
-`@eslint/js` + `typescript-eslint` recommended, React (`react`, `react-hooks`,
-`react-refresh`), `jsx-a11y`, `simple-import-sort` (with a sensible grouping),
-`no-nested-ternary`, a form-field `id`/`name` accessibility rule, and Prettier
-integration. Targets **ESLint 9** (the plugin ecosystem doesn't support ESLint 10 yet).
+| Preset  | Import                           | Adds                                                                                                                 |
+| ------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `base`  | `@yokailabs/eslint-config/base`  | `@eslint/js` + `typescript-eslint` recommended, `simple-import-sort`, `no-nested-ternary`, Prettier                  |
+| `node`  | `@yokailabs/eslint-config/node`  | `base` + Node globals                                                                                                |
+| `react` | `@yokailabs/eslint-config/react` | `base` + React (`react`, `react-hooks`, `react-refresh`), `jsx-a11y`, a form-field `id`/`name` rule, browser globals |
+
+The bare `@yokailabs/eslint-config` import is the `react` preset, kept for existing consumers.
+Targets **ESLint 9**: `eslint-plugin-react` and `eslint-plugin-jsx-a11y` don't support ESLint 10 yet.
 
 ## Installation
 
@@ -24,7 +28,7 @@ npm i -D @yokailabs/eslint-config eslint prettier typescript
 
 ```js
 // eslint.config.js
-import yokai from '@yokailabs/eslint-config';
+import yokai from '@yokailabs/eslint-config/react'; // or /node
 
 export default [
   ...yokai,
