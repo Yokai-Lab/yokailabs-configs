@@ -1,0 +1,3 @@
+# The same checks as CI.
+npm run fmt:check
+npm run smoke

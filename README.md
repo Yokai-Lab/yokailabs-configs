@@ -11,42 +11,30 @@ The goal is **consistency across applications**, not strict enforcement of any p
 
 - [`@yokailabs/prettier-config`](./packages/prettier-config)
   Shared Prettier configuration.
+- [`@yokailabs/eslint-config`](./packages/eslint-config)
+  Shared ESLint flat config, with `base`, `node` and `react` presets.
+- [`@yokailabs/tsconfig`](./packages/tsconfig)
+  Shared tsconfigs: `base`, `app` (Vite and React) and `node`.
 
 ## Development
 
-This repo uses [npm workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces) and [Changesets](https://github.com/changesets/changesets) for versioning and publishing.
+This repo uses [npm workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces) and
+[Changesets](https://github.com/changesets/changesets). `npm install` sets up the git hooks.
 
-### Typical workflow
-
-```bash
-# install deps
-npm install
-
-# format code in repo
-npm run fmt
-
-# create a changeset for version bump
-npm run changeset
-
-# release & publish packages
-npm run release
-```
+The packages have no code of their own to unit test, so their test is `npm run smoke`: it lints
+a file with every ESLint preset and typechecks one with every tsconfig, the way a consumer would,
+so a dependency bump that breaks a plugin, a rule or a TypeScript option fails here first. The
+pre-push hook runs it with `npm run fmt:check`, and so does CI on pull requests and on `main`.
 
 ## Publishing
 
-It’s best to publish from the **monorepo root** using the workspace flag:
+Publishing happens in CI, token-less over npm trusted publishing:
 
 ```bash
-# Dry run first (shows what would be published)
-npm publish -w @yokailabs/prettier-config --access public --dry-run
-
-# Publish for real
-npm publish -w @yokailabs/prettier-config --access public
+npx changeset          # declare the bump: which package, patch/minor/major
+npx changeset version  # apply it locally: versions and changelogs
+git commit -am "..." && git push   # release.yml publishes whatever is unpublished
 ```
 
-Alternatively, you can publish from within a specific package folder:
-
-```bash
-cd packages/prettier-config
-npm publish --access public
-```
+A dependency bump reaches consumers only once a changeset releases it. Only a brand-new package
+name needs a manual first `npm publish`, since trusted publishing cannot create a name.

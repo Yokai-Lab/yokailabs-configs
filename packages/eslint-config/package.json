@@ -51,7 +51,7 @@
   "homepage": "https://github.com/Yokai-Lab/yokailabs-configs#readme",
   "devDependencies": {
     "eslint": "9.39.5",
-    "prettier": "3.9.8",
+    "prettier": "3.9.9",
     "typescript": "6.0.3"
   },
   "dependencies": {

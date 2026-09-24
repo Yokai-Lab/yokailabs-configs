@@ -25,3 +25,6 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 *.swp
+
+# Left by an interrupted smoke test
+.smoke-*/

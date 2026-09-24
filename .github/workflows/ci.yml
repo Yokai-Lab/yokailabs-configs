@@ -1,0 +1,30 @@
+name: CI
+
+# The packages are configs with no code of their own, so ci-node's lint, knip, build and vitest
+# have nothing to run on. The checks are prettier and the smoke test, which uses every config
+# the way a consumer would.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run fmt:check
+      - run: npm run smoke
