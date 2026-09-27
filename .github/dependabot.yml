@@ -8,6 +8,16 @@ updates:
       npm-all:
         patterns:
           - '*'
+    ignore:
+      # eslint-config's peer is eslint ^9, and the typescript-eslint it bundles supports a
+      # bounded TypeScript range, so these majors move only as a deliberate release that raises
+      # the peer; a bump alone ships a config whose dependencies contradict its peer.
+      - dependency-name: eslint
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@eslint/js'
+        update-types: ['version-update:semver-major']
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:
