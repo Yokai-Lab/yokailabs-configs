@@ -48,7 +48,8 @@ ran against.
 
 The packages have no code of their own, so their test is `npm run smoke` plus
 `npm run fmt:check`. `npm run smoke` (`scripts/smoke.mjs`) loads every ESLint preset and
-typechecks with every tsconfig the way a consumer would. It does not touch
-`@yokailabs/prettier-config`: that package is tested by `npm run fmt:check`, because the root
-`package.json` formats this repo with it. The pre-push hook runs both, as CI does. A new preset,
+typechecks with every tsconfig the way a consumer would. It loads `@yokailabs/prettier-config`
+only through the presets' `prettier/prettier` rule on a single line, so it does not test the
+package's options: `npm run fmt:check` does, because the root `package.json` formats this repo
+with it. The pre-push hook runs both, as CI does. A new preset,
 tsconfig or export must add itself to `scripts/smoke.mjs`, or nothing tests it.
