@@ -40,11 +40,9 @@ and `engines`. Fields such as `devDependencies` and `scripts` need none, and nei
 either, since nothing there is published.
 
 Dependabot's weekly PR is the one exception: it bumps published `dependencies` without a
-changeset, and merges that way. Its bumps wait on `main` for the package's next release, which
-adds a patch changeset for them, or a minor one for a bump that is breaking under
-[Versioning](#versioning), decided by reading that bump's changelog (see
-[Publishing](#publishing)). Dependabot cannot write a changeset, so requiring one would add a
-manual step to every weekly PR.
+changeset, and merges that way. Dependabot cannot write a changeset, so requiring one would add a
+manual step to every weekly PR. Its bumps wait on `main` for the package's next release, which
+adds their changesets (see [Publishing](#publishing)).
 
 The majors of `eslint`, `@eslint/js` and `typescript` move only in a deliberate release, which is
 why [`.github/dependabot.yml`](./.github/dependabot.yml) ignores them. A new `eslint` or
@@ -103,5 +101,6 @@ without one, so a release first adds a patch changeset for each package whose pu
 dependencies changed since its last release without a changeset, or a minor one for a bump that
 is breaking under [Versioning](#versioning), decided by reading that bump's changelog, and the
 bumps go out with it.
+
 Only a brand-new package name needs a manual first `npm publish`, since trusted publishing cannot
 create a name.
