@@ -41,15 +41,18 @@ either, since nothing there is published.
 
 Dependabot's weekly PR is the one exception: it bumps published `dependencies` without a
 changeset, and merges that way. Its bumps wait on `main` for the package's next release, which
-adds a patch changeset for them (see [Publishing](#publishing)), so that one routine update does
-not cost a release every week.
+adds a patch changeset for them, or a minor one for a bump that is breaking under
+[Versioning](#versioning), decided by reading that bump's changelog (see
+[Publishing](#publishing)). Dependabot cannot write a changeset, so requiring one would add a
+manual step to every weekly PR.
 
 The majors of `eslint`, `@eslint/js` and `typescript` move only in a deliberate release, which is
 why [`.github/dependabot.yml`](./.github/dependabot.yml) ignores them. A new `eslint` or
 `@eslint/js` major must raise `eslint-config`'s `eslint` peer range with it, or the package ships
 dependencies that contradict its peer. A new `typescript` major must stay within the range the
 bundled `typescript-eslint` supports, or linting breaks for consumers on it. Published
-dependencies stay pinned to exact versions, so what a consumer installs is what smoke tested.
+dependencies stay pinned to exact versions, so a consumer installs the same versions of these
+dependencies that smoke tested.
 
 A rule goes into a preset only when it fits every consumer of that preset, since a preset cannot
 tell its consumers apart. A project-specific rule stays in the consumer's own config, as
@@ -97,6 +100,8 @@ A release is the commit that runs `npx changeset version`. The maintainer pushes
 
 A dependency bump reaches consumers only once a changeset releases it. Dependabot's bumps land
 without one, so a release first adds a patch changeset for each package whose published
-dependencies changed since its last release without a changeset, and the bumps go out with it.
+dependencies changed since its last release without a changeset, or a minor one for a bump that
+is breaking under [Versioning](#versioning), decided by reading that bump's changelog, and the
+bumps go out with it.
 Only a brand-new package name needs a manual first `npm publish`, since trusted publishing cannot
 create a name.
