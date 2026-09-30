@@ -5,9 +5,18 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { ESLint } from 'eslint';
-
 const failures = [];
+
+// The installed tree matches every package.json: a stale lockfile can nest a dependency the
+// package no longer asks for, and the presets would then be smoked against versions no consumer
+// installs. This runs first, and eslint is imported below it, so a tree too broken to load
+// eslint still reports why.
+try {
+  execFileSync('npm', ['ls'], { stdio: 'pipe' });
+} catch (err) {
+  const output = `${String(err.stdout).trim()}\n${String(err.stderr).trim()}`.trim();
+  failures.push(`npm ls: the installed tree contradicts a package.json (run \`npm ci\`)\n${output}`);
+}
 
 // Each ESLint preset lints a clean file without a single message: loading the config validates
 // every rule and its options, and linting runs every plugin.
@@ -19,6 +28,7 @@ for (const [preset, file] of [
 ]) {
   const name = `@yokailabs/eslint-config${preset}`;
   try {
+    const { ESLint } = await import('eslint');
     const { default: config } = await import(name);
     const eslint = new ESLint({ overrideConfigFile: true, overrideConfig: config });
     const [result] = await eslint.lintText('export const answer = 42;\n', { filePath: file });

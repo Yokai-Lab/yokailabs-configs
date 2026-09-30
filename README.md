@@ -23,7 +23,8 @@ This repo uses [npm workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspa
 
 The packages have no code of their own to unit test, so their test is `npm run smoke`: it lints
 a file with every ESLint preset and typechecks one with every tsconfig, the way a consumer would,
-so a dependency bump that breaks a plugin, a rule or a TypeScript option fails here first. The
+so a dependency bump that breaks a plugin, a rule or a TypeScript option fails here first. It
+also fails when `npm ls` does, that is when the installed tree contradicts a `package.json`. The
 pre-push hook runs it with `npm run fmt:check`, and so does CI on pull requests and on `main`.
 
 ## Publishing
