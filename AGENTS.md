@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 Rules for a coding agent working in this repo, each with the reason behind it. How to develop and
 how a release is cut are in the [README](./README.md#development); this file covers only what the
