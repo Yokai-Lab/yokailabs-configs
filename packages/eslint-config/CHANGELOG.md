@@ -1,5 +1,15 @@
 # @yokailabs/eslint-config
 
+## 0.3.0
+
+### Minor Changes
+
+- `base`, and so `node` and `react`, caps each file at 400 lines of code with `max-lines`, comments and blank lines excluded and `*.test.{ts,tsx}` exempt. A file past the cap now fails lint: split it, or pin it at its current count with an override in your own config, as the README's File length section shows, and lower the pin as the file shrinks.
+
+### Patch Changes
+
+- Bump `typescript-eslint` to 8.71.0 and `globals` to 17.13.0.
+
 ## 0.2.0
 
 ### Minor Changes
