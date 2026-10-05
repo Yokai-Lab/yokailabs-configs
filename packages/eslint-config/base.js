@@ -39,4 +39,14 @@ export default defineConfig([
       'no-nested-ternary': 'error',
     },
   },
+  // A file holds one responsibility, so it stays small enough for a person or an agent to read
+  // whole. Comments and blank lines don't count, so cutting comments never satisfies the cap.
+  // Tests are exempt: their cases are independent and found by name.
+  {
+    files: ['**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}'],
+    rules: {
+      'max-lines': ['error', { max: 400, skipComments: true, skipBlankLines: true }],
+    },
+  },
 ]);

@@ -9,7 +9,7 @@ Shared [ESLint](https://eslint.org/) flat configs for Yokai Labs TypeScript proj
 
 | Preset  | Import                           | Adds                                                                                                                 |
 | ------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `base`  | `@yokailabs/eslint-config/base`  | `@eslint/js` + `typescript-eslint` recommended, `simple-import-sort`, `no-nested-ternary`, Prettier                  |
+| `base`  | `@yokailabs/eslint-config/base`  | `@eslint/js` + `typescript-eslint` recommended, `simple-import-sort`, `no-nested-ternary`, `max-lines`, Prettier     |
 | `node`  | `@yokailabs/eslint-config/node`  | `base` + Node globals                                                                                                |
 | `react` | `@yokailabs/eslint-config/react` | `base` + React (`react`, `react-hooks`, `react-refresh`), `jsx-a11y`, a form-field `id`/`name` rule, browser globals |
 
@@ -42,6 +42,20 @@ export default [
 
 Design-system-specific rules (e.g. forbidding hardcoded colors in favour of theme
 tokens) are intentionally **not** bundled — add them per project as above.
+
+### File length
+
+`base` caps each file at 400 lines of code with `max-lines`, comments and blank lines excluded and
+`*.test.{ts,tsx}` exempt, so a module stays small enough to read whole. A project adopting it
+pins each file already past the cap at its current count, after `...yokai`, and lowers the pin
+whenever the file shrinks:
+
+```js
+{
+  files: ['src/engine.ts'],
+  rules: { 'max-lines': ['error', { max: 1243, skipComments: true, skipBlankLines: true }] },
+},
+```
 
 ## Releasing
 
