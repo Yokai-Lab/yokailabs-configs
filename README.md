@@ -21,8 +21,8 @@ The goal is **consistency across applications**, not strict enforcement of any p
 This repo uses [npm workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces) and
 [Changesets](https://github.com/changesets/changesets). `npm install` sets up the git hooks.
 
-The packages have no code of their own to unit test, so their test is `npm run smoke` plus
-`npm run fmt:check`. Smoke lints a file with every ESLint preset and typechecks one with every
+The packages have no code of their own to unit test, so their test is `npm run smoke` (which
+`npm test` runs) plus `npm run fmt:check`. Smoke lints a file with every ESLint preset and typechecks one with every
 tsconfig, the way a consumer would, so a dependency bump that breaks a plugin, a rule or a
 TypeScript option fails here first. It also fails when `npm ls` does, that is when the installed
 tree contradicts a `package.json`. Smoke loads `@yokailabs/prettier-config` only through
