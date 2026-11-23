@@ -1,6 +1,6 @@
 {
   "name": "@yokailabs/eslint-config",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Shared ESLint flat configs for Yokai Labs TypeScript projects: base, Node, and Vite + React.",
   "keywords": [
     "eslint",
@@ -66,6 +66,6 @@
     "eslint-plugin-react-refresh": "0.5.7",
     "eslint-plugin-simple-import-sort": "14.0.0",
     "globals": "17.13.0",
-    "typescript-eslint": "8.71.1"
+    "typescript-eslint": "8.73.0"
   }
 }

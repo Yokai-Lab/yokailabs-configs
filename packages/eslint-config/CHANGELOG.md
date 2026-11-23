@@ -1,5 +1,11 @@
 # @yokailabs/eslint-config
 
+## 0.4.1
+
+### Patch Changes
+
+- Raise typescript-eslint to 8.73.0, whose typescript-estree takes minimatch 11, clearing GHSA-g3hv-75wg-m249 for consumers.
+
 ## 0.4.0
 
 ### Minor Changes
