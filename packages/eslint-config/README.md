@@ -7,11 +7,11 @@ Shared [ESLint](https://eslint.org/) flat configs for Yokai Labs TypeScript proj
 
 ## What's included
 
-| Preset  | Import                           | Adds                                                                                                                 |
-| ------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `base`  | `@yokailabs/eslint-config/base`  | `@eslint/js` + `typescript-eslint` recommended, `simple-import-sort`, `no-nested-ternary`, `max-lines`, Prettier     |
-| `node`  | `@yokailabs/eslint-config/node`  | `base` + Node globals                                                                                                |
-| `react` | `@yokailabs/eslint-config/react` | `base` + React (`react`, `react-hooks`, `react-refresh`), `jsx-a11y`, a form-field `id`/`name` rule, browser globals |
+| Preset  | Import                           | Adds                                                                                                                                  |
+| ------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`  | `@yokailabs/eslint-config/base`  | `@eslint/js` + `typescript-eslint` recommended, `simple-import-sort`, `no-nested-ternary`, `max-lines`, `import-x/no-cycle`, Prettier |
+| `node`  | `@yokailabs/eslint-config/node`  | `base` + Node globals                                                                                                                 |
+| `react` | `@yokailabs/eslint-config/react` | `base` + React (`react`, `react-hooks`, `react-refresh`), `jsx-a11y`, a form-field `id`/`name` rule, browser globals                  |
 
 The bare `@yokailabs/eslint-config` import is the `react` preset, kept for existing consumers.
 Targets **ESLint 9**: `eslint-plugin-react` and `eslint-plugin-jsx-a11y` don't support ESLint 10 yet.
@@ -56,6 +56,24 @@ whenever the file shrinks:
   rules: { 'max-lines': ['error', { max: 1243, skipComments: true, skipBlankLines: true }] },
 },
 ```
+
+### Import cycles
+
+`base` reports a runtime import cycle with `import-x/no-cycle`, since an ESM cycle can read a
+binding before its module has finished evaluating. Imports are resolved through the project's
+tsconfigs, so `.js`-for-`.ts` specifiers, `.ts` extensions and path aliases such as `@/` are all
+followed; packages in `node_modules` are not. Every `tsconfig*.json` below the directory lint runs
+from (outside `node_modules`) is read, so `paths` kept in a referenced `tsconfig.app.json`, however
+deep, are followed too. A cycle made only of `import type` edges passes, since those are
+erased at compile time. A project adopting it breaks each cycle it reports: move what both modules
+need into a third, or turn an edge that only carries types into `import type`.
+
+Two forms of type-only edge are miscounted. An import whose specifiers are all inline types
+(`import { type A } from './a'`) is not reported, though `verbatimModuleSyntax` keeps it as a
+runtime `import './a'`: write type-only imports as `import type`. A type re-export
+(`export type { A } from './a'`) is erased at compile time, yet counts as an edge and can report a
+cycle that does not exist at runtime: write it as `import type { A } from './a'` followed by
+`export type { A }`.
 
 ## Releasing
 

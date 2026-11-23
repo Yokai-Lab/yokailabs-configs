@@ -1,8 +1,8 @@
 // Uses every published config the way a consumer would, so a dependency bump that breaks a
 // plugin, renames a rule or drops an export fails here rather than in the first repo to upgrade.
 // These packages have no code of their own to unit test; this is their test.
-import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const failures = [];
@@ -52,6 +52,70 @@ try {
     } catch (err) {
       failures.push(`@yokailabs/tsconfig/${preset}: ${String(err.stdout).trim()}`);
     }
+  }
+
+  // The base preset reports a runtime import cycle, and passes the same two files once one edge is
+  // `import type`. A cycle needs real files for the resolver to follow, so these are linted from
+  // disk. One edge names `./b.js` for `b.ts`, which only the TypeScript resolver maps.
+  const cycleA = "import { b } from './b.js';\n\nexport type A = number;\nexport const a: A = b;\n";
+  for (const [fixture, cycleB, expected] of [
+    ['runtime', "import { a } from './a.ts';\n\nexport const b = 1;\nexport const c = a;\n", 2],
+    ['type', "import type { A } from './a.ts';\n\nexport const b: A = 1;\n", 0],
+  ]) {
+    const name = `@yokailabs/eslint-config/base import cycle (${fixture})`;
+    const sub = join(dir, `cycle-${fixture}`);
+    mkdirSync(sub);
+    writeFileSync(join(sub, 'a.ts'), cycleA);
+    writeFileSync(join(sub, 'b.ts'), cycleB);
+    try {
+      const { ESLint } = await import('eslint');
+      const { default: config } = await import('@yokailabs/eslint-config/base');
+      const eslint = new ESLint({ overrideConfigFile: true, overrideConfig: config });
+      const messages = (await eslint.lintFiles([sub])).flatMap((r) => r.messages);
+      const cycles = messages.filter((m) => m.ruleId === 'import-x/no-cycle').length;
+      if (cycles !== expected || messages.length !== expected) {
+        const got = messages.map((m) => `${m.ruleId}: ${m.message}`).join('; ') || 'no messages';
+        failures.push(`${name}: expected ${expected} import-x/no-cycle errors, got ${got}`);
+      }
+    } catch (err) {
+      failures.push(`${name}: ${err.message}`);
+    }
+  }
+
+  // A cycle through `@/` aliases is reported when the paths sit in a tsconfig two references below
+  // the root one, as in a workspace's Vite app. The resolver finds tsconfigs from the directory
+  // lint runs in, and only once, so this lints as a consumer does: `eslint .` run from the
+  // project's own root. The config is `.mjs` since no package.json here sets `type: module`.
+  // Several tsconfigs must not make the resolver warn: its advice can't be acted on downstream.
+  const alias = join(dir, 'cycle-alias');
+  const web = join(alias, 'apps', 'web');
+  mkdirSync(join(web, 'src'), { recursive: true });
+  writeFileSync(join(alias, 'eslint.config.mjs'), "export { default } from '@yokailabs/eslint-config/base';\n");
+  writeFileSync(join(alias, 'tsconfig.json'), JSON.stringify({ files: [], references: [{ path: './apps/web' }] }));
+  writeFileSync(
+    join(web, 'tsconfig.json'),
+    JSON.stringify({ files: [], references: [{ path: './tsconfig.app.json' }] }),
+  );
+  writeFileSync(
+    join(web, 'tsconfig.app.json'),
+    JSON.stringify({ compilerOptions: { paths: { '@/*': ['./src/*'] } }, include: ['src'] }),
+  );
+  writeFileSync(join(web, 'src', 'a.ts'), "import { b } from '@/b';\n\nexport const a = 1;\nexport const c = b;\n");
+  writeFileSync(join(web, 'src', 'b.ts'), "import { a } from '@/a';\n\nexport const b = 1;\nexport const d = a;\n");
+  const aliasName = '@yokailabs/eslint-config/base import cycle (alias in a referenced tsconfig)';
+  const lint = spawnSync('npx', ['eslint', '--format', 'json', '.'], { cwd: alias, encoding: 'utf8' });
+  if (String(lint.stderr).includes('Multiple projects found')) {
+    failures.push(`${aliasName}: the resolver warned on stderr\n${lint.stderr.trim()}`);
+  }
+  try {
+    const messages = JSON.parse(lint.stdout).flatMap((r) => r.messages);
+    const cycles = messages.filter((m) => m.ruleId === 'import-x/no-cycle').length;
+    if (cycles !== 2 || messages.length !== 2) {
+      const got = messages.map((m) => `${m.ruleId}: ${m.message}`).join('; ') || 'no messages';
+      failures.push(`${aliasName}: expected 2 import-x/no-cycle errors, got ${got}`);
+    }
+  } catch (err) {
+    failures.push(`${aliasName}: ${err.message}\n${String(lint.stdout).trim()}\n${String(lint.stderr).trim()}`);
   }
 } finally {
   rmSync(dir, { recursive: true, force: true });
