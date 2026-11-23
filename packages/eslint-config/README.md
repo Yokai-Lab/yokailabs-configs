@@ -61,10 +61,10 @@ whenever the file shrinks:
 
 `base` reports a runtime import cycle with `import-x/no-cycle`, since an ESM cycle can read a
 binding before its module has finished evaluating. Imports are resolved through the project's
-tsconfig, so `.js`-for-`.ts` specifiers, `.ts` extensions and path aliases such as `@/` are all
-followed; packages in `node_modules` are not. The tsconfig (or jsconfig) must sit in the directory
-lint runs from, or be referenced by the one there: a project that keeps it elsewhere gets no cycle
-reported through its aliases. A cycle made only of `import type` edges passes, since those are
+tsconfigs, so `.js`-for-`.ts` specifiers, `.ts` extensions and path aliases such as `@/` are all
+followed; packages in `node_modules` are not. Every `tsconfig*.json` below the directory lint runs
+from (outside `node_modules`) is read, so `paths` kept in a referenced `tsconfig.app.json`, however
+deep, are followed too. A cycle made only of `import type` edges passes, since those are
 erased at compile time. A project adopting it breaks each cycle it reports: move what both modules
 need into a third, or turn an edge that only carries types into `import type`.
 

@@ -60,15 +60,16 @@ export default defineConfig([
   // time, so a cycle made only of them passes. import-x also skips an import whose specifiers are
   // all inline types (`import { type A }`), though `verbatimModuleSyntax` keeps it as a runtime
   // `import './a'`: such a cycle goes unreported. The TypeScript resolver reads the project's
-  // tsconfig, so `./a.js` → `a.ts`, `.ts` extensions and `@/` path aliases are all followed. Called
-  // with no options, it looks for that tsconfig (or jsconfig) only in the directory lint runs from:
-  // a project that keeps it elsewhere gets no cycle reported through its aliases.
+  // tsconfigs, so `./a.js` → `a.ts`, `.ts` extensions and `@/` path aliases are all followed. It
+  // reads every `tsconfig*.json` below the directory lint runs from (outside node_modules), not
+  // just the root one: a Vite app keeps its `paths` in `tsconfig.app.json`, references below the
+  // root, where the resolver's default misses them and with them every cycle through an alias.
   {
     files: ['**/*.{ts,tsx}'],
     plugins: { 'import-x': importX },
     settings: {
       ...importXTypeScriptSettings,
-      'import-x/resolver-next': [createTypeScriptImportResolver()],
+      'import-x/resolver-next': [createTypeScriptImportResolver({ project: '**/tsconfig*.json' })],
     },
     rules: {
       'import-x/no-cycle': ['error', { ignoreExternal: true }],
