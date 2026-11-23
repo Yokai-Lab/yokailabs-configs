@@ -2,7 +2,7 @@
 // plugin, renames a rule or drops an export fails here rather than in the first repo to upgrade.
 // These packages have no code of their own to unit test; this is their test.
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const failures = [];
@@ -51,6 +51,34 @@ try {
       execFileSync('npx', ['tsc', '--noEmit', '-p', dir], { stdio: 'pipe' });
     } catch (err) {
       failures.push(`@yokailabs/tsconfig/${preset}: ${String(err.stdout).trim()}`);
+    }
+  }
+
+  // The base preset reports a runtime import cycle, and passes the same two files once one edge is
+  // `import type`. A cycle needs real files for the resolver to follow, so these are linted from
+  // disk. One edge names `./b.js` for `b.ts`, which only the TypeScript resolver maps.
+  const cycleA = "import { b } from './b.js';\n\nexport type A = number;\nexport const a: A = b;\n";
+  for (const [fixture, cycleB, expected] of [
+    ['runtime', "import { a } from './a.ts';\n\nexport const b = 1;\nexport const c = a;\n", 2],
+    ['type', "import type { A } from './a.ts';\n\nexport const b: A = 1;\n", 0],
+  ]) {
+    const name = `@yokailabs/eslint-config/base import cycle (${fixture})`;
+    const sub = join(dir, `cycle-${fixture}`);
+    mkdirSync(sub);
+    writeFileSync(join(sub, 'a.ts'), cycleA);
+    writeFileSync(join(sub, 'b.ts'), cycleB);
+    try {
+      const { ESLint } = await import('eslint');
+      const { default: config } = await import('@yokailabs/eslint-config/base');
+      const eslint = new ESLint({ overrideConfigFile: true, overrideConfig: config });
+      const messages = (await eslint.lintFiles([sub])).flatMap((r) => r.messages);
+      const cycles = messages.filter((m) => m.ruleId === 'import-x/no-cycle').length;
+      if (cycles !== expected || messages.length !== expected) {
+        const got = messages.map((m) => `${m.ruleId}: ${m.message}`).join('; ') || 'no messages';
+        failures.push(`${name}: expected ${expected} import-x/no-cycle errors, got ${got}`);
+      }
+    } catch (err) {
+      failures.push(`${name}: ${err.message}`);
     }
   }
 } finally {
