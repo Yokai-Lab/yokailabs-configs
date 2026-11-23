@@ -60,7 +60,9 @@ export default defineConfig([
   // time, so a cycle made only of them passes. import-x also skips an import whose specifiers are
   // all inline types (`import { type A }`), though `verbatimModuleSyntax` keeps it as a runtime
   // `import './a'`: such a cycle goes unreported. The TypeScript resolver reads the project's
-  // tsconfig, so `./a.js` → `a.ts`, `.ts` extensions and `@/` path aliases are all followed.
+  // tsconfig, so `./a.js` → `a.ts`, `.ts` extensions and `@/` path aliases are all followed. Called
+  // with no options, it looks for that tsconfig (or jsconfig) only in the directory lint runs from:
+  // a project that keeps it elsewhere gets no cycle reported through its aliases.
   {
     files: ['**/*.{ts,tsx}'],
     plugins: { 'import-x': importX },

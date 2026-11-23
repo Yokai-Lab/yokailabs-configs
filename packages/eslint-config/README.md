@@ -62,13 +62,18 @@ whenever the file shrinks:
 `base` reports a runtime import cycle with `import-x/no-cycle`, since an ESM cycle can read a
 binding before its module has finished evaluating. Imports are resolved through the project's
 tsconfig, so `.js`-for-`.ts` specifiers, `.ts` extensions and path aliases such as `@/` are all
-followed; packages in `node_modules` are not. A cycle made only of `import type` edges passes,
-since those are erased at compile time. A project adopting it breaks each cycle it reports: move
-what both modules need into a third, or turn an edge that only carries types into `import type`.
+followed; packages in `node_modules` are not. The tsconfig (or jsconfig) must sit in the directory
+lint runs from, or be referenced by the one there: a project that keeps it elsewhere gets no cycle
+reported through its aliases. A cycle made only of `import type` edges passes, since those are
+erased at compile time. A project adopting it breaks each cycle it reports: move what both modules
+need into a third, or turn an edge that only carries types into `import type`.
 
-An import whose specifiers are all inline types (`import { type A } from './a'`) is not reported
-either, though `verbatimModuleSyntax` keeps it as a runtime `import './a'`. Write type-only
-imports as `import type`.
+Two forms of type-only edge are miscounted. An import whose specifiers are all inline types
+(`import { type A } from './a'`) is not reported, though `verbatimModuleSyntax` keeps it as a
+runtime `import './a'`: write type-only imports as `import type`. A type re-export
+(`export type { A } from './a'`) is erased at compile time, yet counts as an edge and can report a
+cycle that does not exist at runtime: write it as `import type { A } from './a'` followed by
+`export type { A }`.
 
 ## Releasing
 
