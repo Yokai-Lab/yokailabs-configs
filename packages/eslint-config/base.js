@@ -61,15 +61,19 @@ export default defineConfig([
   // all inline types (`import { type A }`), though `verbatimModuleSyntax` keeps it as a runtime
   // `import './a'`: such a cycle goes unreported. The TypeScript resolver reads the project's
   // tsconfigs, so `./a.js` → `a.ts`, `.ts` extensions and `@/` path aliases are all followed. It
-  // reads every `tsconfig*.json` below the directory lint runs from (outside node_modules), not
-  // just the root one: a Vite app keeps its `paths` in `tsconfig.app.json`, references below the
-  // root, where the resolver's default misses them and with them every cycle through an alias.
+  // reads every `tsconfig*.json` below the directory lint runs from (outside node_modules). The
+  // resolver's default reads only the root tsconfig and the ones it references directly, so `paths`
+  // two references down (a workspace app's `tsconfig.app.json`) are missed, and with them every
+  // cycle through an alias. Reading several tsconfigs makes the resolver warn on every run, with
+  // advice a consumer can't act on, since the option is set here: the warning is turned off.
   {
     files: ['**/*.{ts,tsx}'],
     plugins: { 'import-x': importX },
     settings: {
       ...importXTypeScriptSettings,
-      'import-x/resolver-next': [createTypeScriptImportResolver({ project: '**/tsconfig*.json' })],
+      'import-x/resolver-next': [
+        createTypeScriptImportResolver({ project: '**/tsconfig*.json', noWarnOnMultipleProjects: true }),
+      ],
     },
     rules: {
       'import-x/no-cycle': ['error', { ignoreExternal: true }],

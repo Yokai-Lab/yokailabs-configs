@@ -1,7 +1,7 @@
 // Uses every published config the way a consumer would, so a dependency bump that breaks a
 // plugin, renames a rule or drops an export fails here rather than in the first repo to upgrade.
 // These packages have no code of their own to unit test; this is their test.
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -83,12 +83,14 @@ try {
   }
 
   // A cycle through `@/` aliases is reported when the paths sit in a tsconfig two references below
-  // the root one, as in a Vite app. The resolver finds tsconfigs from the directory lint runs in,
-  // and only once, so this lints as a consumer does: `eslint .` run from the project's own root.
+  // the root one, as in a workspace's Vite app. The resolver finds tsconfigs from the directory
+  // lint runs in, and only once, so this lints as a consumer does: `eslint .` run from the
+  // project's own root. The config is `.mjs` since no package.json here sets `type: module`.
+  // Several tsconfigs must not make the resolver warn: its advice can't be acted on downstream.
   const alias = join(dir, 'cycle-alias');
   const web = join(alias, 'apps', 'web');
   mkdirSync(join(web, 'src'), { recursive: true });
-  writeFileSync(join(alias, 'eslint.config.js'), "export { default } from '@yokailabs/eslint-config/base';\n");
+  writeFileSync(join(alias, 'eslint.config.mjs'), "export { default } from '@yokailabs/eslint-config/base';\n");
   writeFileSync(join(alias, 'tsconfig.json'), JSON.stringify({ files: [], references: [{ path: './apps/web' }] }));
   writeFileSync(
     join(web, 'tsconfig.json'),
@@ -101,21 +103,19 @@ try {
   writeFileSync(join(web, 'src', 'a.ts'), "import { b } from '@/b';\n\nexport const a = 1;\nexport const c = b;\n");
   writeFileSync(join(web, 'src', 'b.ts'), "import { a } from '@/a';\n\nexport const b = 1;\nexport const d = a;\n");
   const aliasName = '@yokailabs/eslint-config/base import cycle (alias in a referenced tsconfig)';
-  let report;
-  try {
-    report = execFileSync('npx', ['eslint', '--format', 'json', '.'], { cwd: alias, stdio: 'pipe' });
-  } catch (err) {
-    report = err.stdout;
+  const lint = spawnSync('npx', ['eslint', '--format', 'json', '.'], { cwd: alias, encoding: 'utf8' });
+  if (String(lint.stderr).includes('Multiple projects found')) {
+    failures.push(`${aliasName}: the resolver warned on stderr\n${lint.stderr.trim()}`);
   }
   try {
-    const messages = JSON.parse(String(report)).flatMap((r) => r.messages);
+    const messages = JSON.parse(lint.stdout).flatMap((r) => r.messages);
     const cycles = messages.filter((m) => m.ruleId === 'import-x/no-cycle').length;
     if (cycles !== 2 || messages.length !== 2) {
       const got = messages.map((m) => `${m.ruleId}: ${m.message}`).join('; ') || 'no messages';
       failures.push(`${aliasName}: expected 2 import-x/no-cycle errors, got ${got}`);
     }
   } catch (err) {
-    failures.push(`${aliasName}: ${err.message}\n${String(report).trim()}`);
+    failures.push(`${aliasName}: ${err.message}\n${String(lint.stdout).trim()}\n${String(lint.stderr).trim()}`);
   }
 } finally {
   rmSync(dir, { recursive: true, force: true });
